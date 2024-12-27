@@ -1,0 +1,43 @@
+syntax = "proto3";
+package service;
+import "training/training_v2.proto";
+option go_package = "snet-training-example/service";
+
+message sttResp{
+  string result = 1;
+}
+
+message sttInput{
+  trainingV2.ModelID model_id = 1;
+  bytes speech = 2;
+}
+
+service ProMethods{
+  // Этот метод принимает modelID и демон поймет это
+  rpc stt(sttInput) returns (sttResp) {
+    option (trainingV2.dataset_description) = "Additional requirements";
+    option (trainingV2.dataset_files_type) = "png, mp4, txt, mp3";
+    option (trainingV2.dataset_type) = "zip, tar.gz";
+    option (trainingV2.dataset_max_count_files) = 100;
+    option (trainingV2.dataset_max_size_mb) = 100;
+    option (trainingV2.dataset_max_size_single_file_mb) = 10;
+    option (trainingV2.default_model_id) = "default";
+    option (trainingV2.max_models_per_user) = 5;
+
+  }
+}
+
+message ttsInput {
+  string text = 1;
+}
+
+message ttsResponse {
+  string text = 1;
+}
+
+service BasicMethods{
+  // обычный метод который не принимает modelID
+  rpc tts(ttsInput) returns(ttsResponse){
+
+  }
+}
