@@ -20,18 +20,18 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Daemon_CreateModel_FullMethodName         = "/training_daemon.Daemon/create_model"
-	Daemon_ValidateModelPrice_FullMethodName  = "/training_daemon.Daemon/validate_model_price"
-	Daemon_UploadAndValidate_FullMethodName   = "/training_daemon.Daemon/upload_and_validate"
-	Daemon_ValidateModel_FullMethodName       = "/training_daemon.Daemon/validate_model"
-	Daemon_TrainModelPrice_FullMethodName     = "/training_daemon.Daemon/train_model_price"
-	Daemon_TrainModel_FullMethodName          = "/training_daemon.Daemon/train_model"
-	Daemon_DeleteModel_FullMethodName         = "/training_daemon.Daemon/delete_model"
-	Daemon_GetAllModels_FullMethodName        = "/training_daemon.Daemon/get_all_models"
-	Daemon_GetModel_FullMethodName            = "/training_daemon.Daemon/get_model"
-	Daemon_UpdateModel_FullMethodName         = "/training_daemon.Daemon/update_model"
-	Daemon_GetTrainingMetadata_FullMethodName = "/training_daemon.Daemon/get_training_metadata"
-	Daemon_GetMethodMetadata_FullMethodName   = "/training_daemon.Daemon/get_method_metadata"
+	Daemon_CreateModel_FullMethodName         = "/training.Daemon/create_model"
+	Daemon_ValidateModelPrice_FullMethodName  = "/training.Daemon/validate_model_price"
+	Daemon_UploadAndValidate_FullMethodName   = "/training.Daemon/upload_and_validate"
+	Daemon_ValidateModel_FullMethodName       = "/training.Daemon/validate_model"
+	Daemon_TrainModelPrice_FullMethodName     = "/training.Daemon/train_model_price"
+	Daemon_TrainModel_FullMethodName          = "/training.Daemon/train_model"
+	Daemon_DeleteModel_FullMethodName         = "/training.Daemon/delete_model"
+	Daemon_GetAllModels_FullMethodName        = "/training.Daemon/get_all_models"
+	Daemon_GetModel_FullMethodName            = "/training.Daemon/get_model"
+	Daemon_UpdateModel_FullMethodName         = "/training.Daemon/update_model"
+	Daemon_GetTrainingMetadata_FullMethodName = "/training.Daemon/get_training_metadata"
+	Daemon_GetMethodMetadata_FullMethodName   = "/training.Daemon/get_method_metadata"
 )
 
 // DaemonClient is the client API for Daemon service.
@@ -515,7 +515,7 @@ func _Daemon_GetMethodMetadata_Handler(srv interface{}, ctx context.Context, dec
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Daemon_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "training_daemon.Daemon",
+	ServiceName: "training.Daemon",
 	HandlerType: (*DaemonServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
