@@ -46,7 +46,7 @@ func main() {
 	client := training.NewDaemonClient(conn) // здесь создаем именно демон клиент, а не ModelClient
 	//client := training.NewModelClient(conn) // здесь создаем именно демон клиент, а не ModelClient
 	//
-	privateKey, err := crypto.HexToECDSA("e7638fd785fdb5cf12df0b1d7b5584cc20d4e8526403f0df105aadf23728f538")
+	privateKey, err := crypto.HexToECDSA("TODO")
 	if err != nil {
 		log.Fatalln(err)
 	}
