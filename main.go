@@ -27,7 +27,7 @@ type model struct {
 
 var models = map[string]model{}
 
-// protoc -I . service.proto --go-grpc_out=. --go_out=.
+// protoc -I . *.proto --go-grpc_out=. --go_out=.
 func main() {
 	lis, err := net.Listen("tcp", serverAddr)
 	if err != nil {
@@ -87,15 +87,13 @@ func (s *ExampleServer) ValidateModelPrice(ctx context.Context, request *pb.Vali
 
 func (s *ExampleServer) UploadAndValidate(stream pb.Model_UploadAndValidateServer) error {
 	log.Println("UploadAndValidate started")
-	var fullData bytes.Buffer // Для хранения всего принятого файла
+	var fullData bytes.Buffer // for saving file
 	var modelID string
 	var name string
 	for {
-		// Получаем сообщение из потока
 		req, err := stream.Recv()
 		if err == io.EOF {
 			log.Println("catched EOF")
-			// Клиент завершил отправку данных
 			break
 		}
 		if req == nil {
@@ -108,7 +106,7 @@ func (s *ExampleServer) UploadAndValidate(stream pb.Model_UploadAndValidateServe
 		name = req.FileName
 		modelID = req.ModelId
 		log.Printf("Received chunk of data for model %s", modelID)
-		fullData.Write(req.Data) // Добавляем данные в общий буфер
+		fullData.Write(req.Data)
 	}
 	err := os.WriteFile(name, fullData.Bytes(), 0644)
 	if err != nil {
