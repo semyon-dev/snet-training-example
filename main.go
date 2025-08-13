@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"google.golang.org/grpc"
 	"io"
 	"log"
 	"math/rand"
@@ -13,6 +12,9 @@ import (
 	pb "snet-training-example/service"
 	"strconv"
 	"time"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 var (
@@ -55,6 +57,20 @@ func (s *ExampleServer) mustEmbedUnimplementedModelServer() {
 }
 
 func (s *ExampleServer) BasicStt(c context.Context, r *pb.BasicSttInput) (*pb.SttResp, error) {
+
+	md, ok := metadata.FromIncomingContext(c)
+	if !ok {
+		log.Println("no metadata found")
+	} else {
+		fmt.Printf("%+v", md)
+		if values := md.Get("user-address"); len(values) > 0 {
+			userAddress := values[0]
+			log.Printf("\nUser address: %s\n", userAddress)
+		} else {
+			log.Println("user-address header not found in metadata")
+		}
+	}
+
 	log.Println("basic stt request")
 	return &pb.SttResp{Result: "you are using service without model id"}, nil
 }
