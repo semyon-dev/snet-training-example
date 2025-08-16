@@ -7,9 +7,11 @@
 * Default port 5001
 * Minimum requirements
 
-## Proto generate
+## Proto generate or update
 
-```protoc -I . *.proto --go-grpc_out=. --go_out=.```
+1. ```cd service```
+
+2. ```protoc -I . *.proto --go-grpc_out=. --go_out=.```
 
 ## Run with go
 

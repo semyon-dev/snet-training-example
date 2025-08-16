@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"google.golang.org/grpc"
 	"io"
 	"log"
 	"math/rand"
@@ -13,6 +12,9 @@ import (
 	pb "snet-training-example/service"
 	"strconv"
 	"time"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 var (
@@ -55,15 +57,42 @@ func (s *ExampleServer) mustEmbedUnimplementedModelServer() {
 }
 
 func (s *ExampleServer) BasicStt(c context.Context, r *pb.BasicSttInput) (*pb.SttResp, error) {
-	log.Println("basic stt request")
+	log.Println("basic stt request with user addr:", readMD(c))
 	return &pb.SttResp{Result: "you are using service without model id"}, nil
 }
 
 func (s *ExampleServer) Stt(c context.Context, r *pb.SttInput) (*pb.SttResp, error) {
+	log.Println("STT request with user addr:", readMD(c))
 	return &pb.SttResp{Result: "you are using service with modelID" + r.ModelId.ModelId}, nil
 }
 
+func readMD(ctx context.Context) string {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return ""
+	}
+	//fmt.Printf("md: %+v", md)
+
+	addrs := md.Get("user-address")
+	if len(addrs) == 0 {
+		return ""
+	}
+
+	userAddr := addrs[0]
+	daemondebug := md.Get("daemon-debug")
+	if len(daemondebug) == 0 {
+		return ""
+	}
+
+	fmt.Println("daemon-debug", daemondebug[0])
+	return userAddr
+}
+
 func (s *ExampleServer) CreateModel(ctx context.Context, newModel *pb.NewModel) (*pb.ModelID, error) {
+
+	addr := readMD(ctx)
+	log.Println("CreateModel addr:", addr)
+
 	// Generate a random integer
 	randomIntInRange := rand.Intn(100000) // Generates a random integer between 0 and 100000 (inclusive)
 	strModelID := strconv.Itoa(randomIntInRange)
@@ -79,14 +108,14 @@ func (s *ExampleServer) CreateModel(ctx context.Context, newModel *pb.NewModel) 
 }
 
 func (s *ExampleServer) ValidateModelPrice(ctx context.Context, request *pb.ValidateRequest) (*pb.PriceInBaseUnit, error) {
-	log.Println("ValidateModelPrice request")
+	log.Println("ValidateModelPrice addr:", readMD(ctx))
 	return &pb.PriceInBaseUnit{
 		Price: 1,
 	}, nil
 }
 
 func (s *ExampleServer) UploadAndValidate(stream pb.Model_UploadAndValidateServer) error {
-	log.Println("UploadAndValidate started")
+	log.Println("UploadAndValidate addr:", readMD(stream.Context()))
 	var fullData bytes.Buffer // for saving file
 	var modelID string
 	var name string
@@ -124,7 +153,7 @@ func (s *ExampleServer) UploadAndValidate(stream pb.Model_UploadAndValidateServe
 }
 
 func (s *ExampleServer) ValidateModel(ctx context.Context, req *pb.ValidateRequest) (*pb.StatusResponse, error) {
-	log.Println("validate model")
+	log.Println("ValidateModel request with addr:", readMD(ctx))
 	go func() {
 		models[req.ModelId] = model{Status: pb.Status_VALIDATING}
 		time.Sleep(3 * time.Second)
@@ -136,14 +165,14 @@ func (s *ExampleServer) ValidateModel(ctx context.Context, req *pb.ValidateReque
 }
 
 func (s *ExampleServer) TrainModelPrice(ctx context.Context, id *pb.ModelID) (*pb.PriceInBaseUnit, error) {
-	log.Println("train model price")
+	log.Println("TrainModelPrice request with addr:", readMD(ctx))
 	return &pb.PriceInBaseUnit{
 		Price: 1,
 	}, nil
 }
 
 func (s *ExampleServer) TrainModel(ctx context.Context, id *pb.ModelID) (*pb.StatusResponse, error) {
-	log.Println("TrainModel request")
+	log.Println("TrainModel request with user addr:", readMD(ctx))
 	go func() {
 		models[id.ModelId] = model{Status: pb.Status_TRAINING}
 		time.Sleep(3 * time.Second)
@@ -155,7 +184,7 @@ func (s *ExampleServer) TrainModel(ctx context.Context, id *pb.ModelID) (*pb.Sta
 }
 
 func (s *ExampleServer) DeleteModel(ctx context.Context, id *pb.ModelID) (*pb.StatusResponse, error) {
-	log.Println("delete request")
+	log.Println("DeleteModel request with user addr:", readMD(ctx))
 	models[id.ModelId] = model{Status: pb.Status_DELETED}
 	return &pb.StatusResponse{
 		Status: pb.Status_DELETED,
@@ -163,7 +192,7 @@ func (s *ExampleServer) DeleteModel(ctx context.Context, id *pb.ModelID) (*pb.St
 }
 
 func (s *ExampleServer) GetModelStatus(ctx context.Context, id *pb.ModelID) (*pb.StatusResponse, error) {
-	log.Println("GetModelStatus request")
+	log.Println("GetModelStatus request with user addr:", readMD(ctx))
 	if _, ok := models[id.ModelId]; !ok {
 		models[id.ModelId] = model{Status: pb.Status_DELETED}
 	}

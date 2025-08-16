@@ -1,5 +1,9 @@
 venv
 env
+log
+*.log
 .idea
 *.txt
 vscode
+.vscode
+.env
