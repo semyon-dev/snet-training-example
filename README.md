@@ -1,6 +1,6 @@
 ## Example AI service for SNET Decentralized AI Platform
 
-* Golang 1.24
+* Golang 1.24.6
 * Simple calls
 * Training support
 * Service type grpc

@@ -1,4 +1,4 @@
-module snet-training-example
+module snet-service-example
 
 go 1.24.6
 

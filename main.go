@@ -9,7 +9,7 @@ import (
 	"math/rand"
 	"net"
 	"os"
-	pb "snet-training-example/service"
+	pb "snet-service-example/service"
 	"strconv"
 	"time"
 
@@ -56,31 +56,35 @@ func (s *ExampleServer) mustEmbedUnimplementedModelServer() {
 	panic("implement me")
 }
 
-func (s *ExampleServer) BasicStt(c context.Context, r *pb.BasicSttInput) (*pb.SttResp, error) {
-
+func getUserAddr(c context.Context) (addr string) {
 	md, ok := metadata.FromIncomingContext(c)
 	if !ok {
 		log.Println("no metadata found")
+		return "0x"
 	} else {
 		fmt.Printf("%+v", md)
 		if values := md.Get("user-address"); len(values) > 0 {
 			userAddress := values[0]
-			log.Printf("\nUser address: %s\n", userAddress)
-		} else {
-			log.Println("user-address header not found in metadata")
+			return userAddress
 		}
+		log.Println("user-address header not found in metadata")
 	}
+	return "unknown"
+}
 
-	log.Println("basic stt request")
+func (s *ExampleServer) BasicStt(c context.Context, r *pb.BasicSttInput) (*pb.SttResp, error) {
+	log.Println("basic stt request from: ", getUserAddr(c))
 	return &pb.SttResp{Result: "you are using service without model id"}, nil
 }
 
 func (s *ExampleServer) Stt(c context.Context, r *pb.SttInput) (*pb.SttResp, error) {
+	log.Println("Stt request from: ", getUserAddr(c))
 	return &pb.SttResp{Result: "you are using service with modelID" + r.ModelId.ModelId}, nil
 }
 
-func (s *ExampleServer) CreateModel(ctx context.Context, newModel *pb.NewModel) (*pb.ModelID, error) {
+func (s *ExampleServer) CreateModel(c context.Context, newModel *pb.NewModel) (*pb.ModelID, error) {
 	// Generate a random integer
+	log.Println("CreateModel request from: ", getUserAddr(c))
 	randomIntInRange := rand.Intn(100000) // Generates a random integer between 0 and 100000 (inclusive)
 	strModelID := strconv.Itoa(randomIntInRange)
 	fmt.Println("new model, id:", strModelID)
@@ -94,7 +98,7 @@ func (s *ExampleServer) CreateModel(ctx context.Context, newModel *pb.NewModel) 
 	}, nil
 }
 
-func (s *ExampleServer) ValidateModelPrice(ctx context.Context, request *pb.ValidateRequest) (*pb.PriceInBaseUnit, error) {
+func (s *ExampleServer) ValidateModelPrice(c context.Context, request *pb.ValidateRequest) (*pb.PriceInBaseUnit, error) {
 	log.Println("ValidateModelPrice request")
 	return &pb.PriceInBaseUnit{
 		Price: 1,
